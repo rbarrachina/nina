@@ -1,0 +1,17 @@
+{
+  "name": "Expedient 23",
+  "short_name": "Expedient 23",
+  "description": "Ruta d'evidencies pel barri.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#16130f",
+  "theme_color": "#16130f",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

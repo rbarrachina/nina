@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ca">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#16130f">
+    <title>Expedient 23</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icon.svg">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="styles.css?v=54">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Cas obert</p>
+          <h1>Expedient 23</h1>
+        </div>
+        <button class="icon-button" id="locateButton" type="button" aria-label="Localitza'm">
+          <span aria-hidden="true">⌖</span>
+        </button>
+      </header>
+
+      <main>
+        <section class="intro" id="introPanel">
+          <p>
+            Detectiva Nina, hi ha 10 escenes repartides pel barri. Cada escena resolta et
+            donarà una lletra. Quan les tinguis totes, ordena-les i tanca l'expedient.
+          </p>
+        </section>
+
+        <section class="map-wrap" aria-label="Mapa del cas">
+          <div id="map"></div>
+          <div class="map-status" id="mapStatus">GPS pendent d'autorització</div>
+        </section>
+
+        <section class="progress-panel">
+          <div>
+            <p class="label">Lletres</p>
+            <strong id="progressText">0/10</strong>
+          </div>
+          <div class="letters" id="lettersList" aria-label="Lletres recuperades"></div>
+          <button class="final-check is-hidden" id="finalCheck" type="button">Validar</button>
+        </section>
+
+        <section class="scene-panel" id="scenePanel">
+          <div class="empty-state">
+            <p class="label">Escenes</p>
+            <h2>Selecciona una pista del mapa</h2>
+            <p>Quan siguis dins del radi de 40 metres podràs obrir el repte.</p>
+          </div>
+        </section>
+
+        <p class="feedback final-feedback" id="finalFeedback" role="status"></p>
+      </main>
+    </div>
+
+    <template id="sceneTemplate">
+      <article class="scene-card">
+        <button class="sheet-close" type="button" aria-label="Tancar repte">×</button>
+        <div class="scene-head">
+          <div>
+            <p class="label scene-number"></p>
+            <h2 class="scene-title"></h2>
+          </div>
+          <span class="scene-state"></span>
+        </div>
+        <img class="scene-image is-hidden" alt="">
+        <div class="copy-block">
+          <p class="label">Pista</p>
+          <p class="scene-clue"></p>
+        </div>
+        <div class="distance-note"></div>
+        <div class="challenge is-hidden">
+          <div class="copy-block">
+            <p class="label">Repte</p>
+            <p class="scene-question"></p>
+          </div>
+          <form class="answer-form">
+            <label>Resposta</label>
+            <input type="text" autocomplete="off">
+            <button type="submit">Comprovar</button>
+          </form>
+          <p class="feedback" role="status"></p>
+        </div>
+      </article>
+    </template>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js?v=54"></script>
+  </body>
+</html>
