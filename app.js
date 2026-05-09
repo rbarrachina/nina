@@ -355,9 +355,9 @@ function renderUserPosition() {
     userMarker = L.marker(latLng, {
       icon: L.divIcon({
         className: "",
-        html: '<span class="user-marker"></span>',
-        iconSize: [18, 18],
-        iconAnchor: [9, 9],
+        html: '<span class="user-marker" aria-label="La teva ubicació">🕵️‍♀️</span>',
+        iconSize: [42, 42],
+        iconAnchor: [21, 21],
       }),
     }).addTo(map);
   } else {

@@ -677,12 +677,18 @@ p {
 }
 
 .user-marker {
-  width: 18px;
-  height: 18px;
-  border: 3px solid #fff;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 2px solid #f6efe2;
   border-radius: 50%;
-  background: #3aa0ff;
-  box-shadow: 0 0 0 8px rgba(58, 160, 255, 0.2);
+  background: rgba(24, 19, 10, 0.88);
+  box-shadow:
+    0 0 0 8px rgba(212, 168, 79, 0.22),
+    0 10px 22px rgba(0, 0, 0, 0.42);
+  font-size: 1.45rem;
+  line-height: 1;
 }
 
 .is-hidden {
