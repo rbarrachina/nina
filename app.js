@@ -143,6 +143,7 @@ let selectedEvidenceId = null;
 let nativeDragId = null;
 let ignoreEvidenceTapUntil = 0;
 let finalPrizeShown = false;
+let finalGiftViewed = false;
 const sceneMarkers = new Map();
 
 const elements = {
@@ -756,32 +757,22 @@ function evaluateFinalOrder(showFailure) {
     return;
   }
 
-  if (finalPrizeShown) return;
   finalPrizeShown = true;
-  elements.finalFeedback.textContent = "Ordre correcte. Expedient tancat.";
+  elements.finalFeedback.textContent = "";
   elements.finalFeedback.className = "feedback good";
-  showFinalPrizeIntro();
+  showFinalPrizeIntro(finalGiftViewed);
 }
 
-function showFinalPrizeIntro() {
+function showFinalPrizeIntro(showGift = false) {
+  if (document.querySelector(".final-prize-overlay")) return;
+
   const overlay = document.createElement("div");
   overlay.className = "final-prize-overlay";
-  overlay.innerHTML = `
-    <article class="final-prize-card">
-      <button class="final-prize-close" type="button" aria-label="Tancar">×</button>
-      <h2>Felicitats!</h2>
-      <p>Has superat el repte i has resolt totes les pistes del cas.</p>
-      <p>Fes una captura de pantalla de la imatge del regal com a comprovació de premi i envia-la als teus pares.</p>
-      <button class="final-prize-button" type="button">Veure regal</button>
-    </article>
-  `;
   document.body.append(overlay);
 
-  overlay.querySelector(".final-prize-close").addEventListener("click", () => {
-    overlay.remove();
-  });
-
-  overlay.querySelector(".final-prize-button").addEventListener("click", () => {
+  const closePrize = () => overlay.remove();
+  const renderGift = () => {
+    finalGiftViewed = true;
     overlay.innerHTML = `
       <article class="final-prize-card gift-card">
         <button class="final-prize-close" type="button" aria-label="Tancar">×</button>
@@ -791,10 +782,26 @@ function showFinalPrizeIntro() {
         <p>Torna a casa a bufar espelmes.</p>
       </article>
     `;
-    overlay.querySelector(".final-prize-close").addEventListener("click", () => {
-      overlay.remove();
-    });
-  });
+    overlay.querySelector(".final-prize-close").addEventListener("click", closePrize);
+  };
+
+  if (showGift) {
+    renderGift();
+    return;
+  }
+
+  overlay.innerHTML = `
+    <article class="final-prize-card">
+      <button class="final-prize-close" type="button" aria-label="Tancar">×</button>
+      <h2>Felicitats!</h2>
+      <p>Has superat el repte i has resolt totes les pistes del cas.</p>
+      <p>Fes una captura de pantalla de la imatge del regal com a comprovació de premi i envia-la als teus pares.</p>
+      <button class="final-prize-button" type="button">Veure regal</button>
+    </article>
+  `;
+
+  overlay.querySelector(".final-prize-close").addEventListener("click", closePrize);
+  overlay.querySelector(".final-prize-button").addEventListener("click", renderGift);
 }
 
 function ensureLetterOrder() {
