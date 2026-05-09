@@ -148,7 +148,6 @@ const sceneMarkers = new Map();
 const elements = {
   locateButton: document.querySelector("#locateButton"),
   mapStatus: document.querySelector("#mapStatus"),
-  progressText: document.querySelector("#progressText"),
   lettersList: document.querySelector("#lettersList"),
   scenePanel: document.querySelector("#scenePanel"),
   sceneTemplate: document.querySelector("#sceneTemplate"),
@@ -270,7 +269,6 @@ function renderEmptyScene() {
 function renderProgress() {
   const completedCount = progress.completed.length;
   ensureLetterOrder();
-  elements.progressText.textContent = `${completedCount}/${scenes.length}`;
   elements.lettersList.replaceChildren();
 
   for (let index = 0; index < scenes.length; index += 1) {
