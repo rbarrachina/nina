@@ -150,6 +150,7 @@ let selectedSceneId = scenes[0].id;
 let sceneSheetOpen = false;
 let map;
 let userMarker;
+let locationWatchId = null;
 let activeEvidenceDrag = false;
 let selectedEvidenceId = null;
 let nativeDragId = null;
@@ -157,6 +158,7 @@ let ignoreEvidenceTapUntil = 0;
 let finalPrizeShown = false;
 let finalGiftViewed = false;
 const sceneMarkers = new Map();
+let sceneQueueControl;
 
 const elements = {
   locateButton: document.querySelector("#locateButton"),
@@ -194,18 +196,14 @@ function initMap() {
     attribution: "&copy; OpenStreetMap",
   }).addTo(map);
 
-  scenes.forEach((scene, index) => {
-    if (scene.hiddenOnMap && !TEST_MODE) return;
-    addSceneMarker(scene, index);
-  });
+  addSceneQueueControl();
+  syncSceneMarkers();
 }
 
-function addSceneMarker(scene, index) {
+function addSceneMarker(scene) {
   if (sceneMarkers.has(scene.id)) return;
 
-  const position = hasCoordinates(scene)
-    ? [scene.lat, scene.lng]
-    : offsetPosition(CASE_CENTER, index);
+  const position = [scene.lat, scene.lng];
 
   const marker = L.marker(position, {
     icon: L.divIcon({
@@ -231,39 +229,71 @@ function locateUser() {
     return;
   }
 
+  if (locationWatchId !== null) {
+    if (userPosition) renderUserPosition();
+    return;
+  }
+
   elements.mapStatus.textContent = "Demanant posició...";
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      userPosition = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-        accuracy: position.coords.accuracy,
-      };
-      renderUserPosition();
-      revealNearbyHiddenMarkers();
-      if (sceneSheetOpen) renderScene(getSelectedScene());
-      elements.mapStatus.textContent = `GPS actiu · precisió ${Math.round(userPosition.accuracy)} m`;
-    },
+  locationWatchId = navigator.geolocation.watchPosition(
+    handlePositionUpdate,
     () => {
       elements.mapStatus.textContent = "GPS no autoritzat";
+      locationWatchId = null;
       if (sceneSheetOpen) renderScene(getSelectedScene());
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 15000 }
   );
 }
 
-function revealNearbyHiddenMarkers() {
+function handlePositionUpdate(position) {
+  userPosition = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude,
+    accuracy: position.coords.accuracy,
+  };
+  renderUserPosition();
+  discoverNearbyScenes();
+  syncSceneMarkers();
+  renderSceneQueue();
+  if (sceneSheetOpen) renderScene(getSelectedScene());
+  elements.mapStatus.textContent = `GPS actiu · precisió ${Math.round(userPosition.accuracy)} m`;
+}
+
+function discoverNearbyScenes() {
   if (!userPosition) return;
-  scenes.forEach((scene, index) => {
-    if (!scene.hiddenOnMap || sceneMarkers.has(scene.id) || !hasCoordinates(scene)) return;
+  let changed = false;
+  scenes.forEach((scene) => {
+    if (!isSceneUnlocked(scene) || isSceneLocated(scene) || !hasCoordinates(scene)) return;
     if (distanceMeters(userPosition, scene) <= RADIUS_METERS) {
-      addSceneMarker(scene, index);
+      progress.located.push(scene.id);
+      changed = true;
+    }
+  });
+  if (changed) saveProgress();
+}
+
+function syncSceneMarkers() {
+  scenes.forEach((scene) => {
+    const shouldShow = hasCoordinates(scene) && (isSceneLocated(scene) || isCompleted(scene.id) || (TEST_MODE && isSceneUnlocked(scene)));
+    const marker = sceneMarkers.get(scene.id);
+
+    if (shouldShow && !marker) {
+      addSceneMarker(scene);
+      return;
+    }
+
+    if (!shouldShow && marker) {
+      marker.remove();
+      sceneMarkers.delete(scene.id);
     }
   });
 }
 
 function renderAll() {
   renderProgress();
+  renderSceneQueue();
+  syncSceneMarkers();
   renderEmptyScene();
 }
 
@@ -274,8 +304,8 @@ function renderEmptyScene() {
   elements.scenePanel.innerHTML = `
     <div class="empty-state">
       <p class="label">Escenes</p>
-      <h2>Selecciona una pista del mapa</h2>
-      <p>Quan siguis dins del radi de 40 metres podràs obrir el repte.</p>
+      <h2>Selecciona un número desbloquejat</h2>
+      <p>Quan siguis dins del radi de 40 metres, l'enigma apareixerà al mapa i podràs resoldre'l.</p>
     </div>
   `;
 }
@@ -314,6 +344,7 @@ function renderScene(scene) {
   const sceneNumber = getSceneNumber(scene);
   const isDone = isCompleted(scene.id);
   const canOpen = canOpenScene(scene);
+  const isUnlocked = isSceneUnlocked(scene);
   const image = fragment.querySelector(".scene-image");
   const challenge = fragment.querySelector(".challenge");
   const form = fragment.querySelector(".answer-form");
@@ -336,7 +367,7 @@ function renderScene(scene) {
 
   fragment.querySelector(".distance-note").textContent = distanceCopy(scene, canOpen);
 
-  if (canOpen && !scene.pending) {
+  if (isUnlocked && canOpen && !scene.pending) {
     challenge.classList.remove("is-hidden");
   }
 
@@ -378,6 +409,56 @@ function renderUserPosition() {
     userMarker.setLatLng(latLng);
   }
   map.setView(latLng, Math.max(map.getZoom(), 16));
+}
+
+function addSceneQueueControl() {
+  const QueueControl = L.Control.extend({
+    onAdd: () => {
+      const container = L.DomUtil.create("div", "scene-queue-control");
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+      return container;
+    },
+  });
+
+  sceneQueueControl = new QueueControl({ position: "topleft" });
+  sceneQueueControl.addTo(map);
+  renderSceneQueue();
+}
+
+function renderSceneQueue() {
+  if (!sceneQueueControl) return;
+  const container = sceneQueueControl.getContainer();
+  if (!container) return;
+  container.replaceChildren();
+
+  getScenesByNumber().forEach((scene) => {
+    const button = document.createElement("button");
+    const unlocked = isSceneUnlocked(scene);
+    const located = isSceneLocated(scene) || isCompleted(scene.id) || (TEST_MODE && unlocked);
+    button.type = "button";
+    button.className = [
+      "scene-queue-button",
+      unlocked ? "is-unlocked" : "is-locked",
+      located ? "is-located" : "",
+      isCompleted(scene.id) ? "is-done" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    button.textContent = String(getSceneNumber(scene));
+    button.setAttribute("aria-label", unlocked ? `Obrir enigma ${getSceneNumber(scene)}` : `Enigma ${getSceneNumber(scene)} bloquejat`);
+    button.disabled = !unlocked;
+
+    if (unlocked) {
+      button.addEventListener("click", () => {
+        selectedSceneId = scene.id;
+        sceneSheetOpen = true;
+        renderScene(scene);
+      });
+    }
+
+    container.append(button);
+  });
 }
 
 function showWelcomeMessage() {
@@ -441,6 +522,8 @@ function checkSceneAnswer(scene, value, feedback) {
 
   showLetterReveal(scene.letter, () => {
     updateMarker(scene);
+    renderSceneQueue();
+    syncSceneMarkers();
     renderProgress();
     renderEmptyScene();
   });
@@ -869,16 +952,22 @@ function normalizeLetterSlots(value) {
 function stateLabel(scene, isDone, canOpen) {
   if (scene.pending) return "pendent";
   if (isDone) return "resolta";
+  if (!isSceneUnlocked(scene)) return "bloquejada";
+  if (!isSceneLocated(scene) && !TEST_MODE) return "per localitzar";
   if (canOpen) return "oberta";
   return "bloquejada";
 }
 
 function distanceCopy(scene, canOpen) {
+  if (!isSceneUnlocked(scene)) return "Aquest enigma encara no està desbloquejat.";
   if (scene.pending) return "Aquesta escena encara no té el contingut definit.";
   if (!hasCoordinates(scene)) {
     return TEST_MODE
       ? "Mode de prova actiu: escena oberta sense coordenades."
       : "Falten les coordenades d'aquesta escena per activar el radi de 40 metres.";
+  }
+  if (!isSceneLocated(scene) && !TEST_MODE) {
+    return "Aquest enigma encara no és al mapa. Acosta't a la seva ubicació i apareixerà automàticament quan siguis dins del radi de 40 metres.";
   }
   if (!userPosition) return "Activa el GPS per comprovar si ets dins del radi de 40 metres.";
 
@@ -890,9 +979,9 @@ function distanceCopy(scene, canOpen) {
 function canOpenScene(scene) {
   if (isCompleted(scene.id)) return true;
   if (scene.pending) return false;
+  if (!isSceneUnlocked(scene)) return false;
   if (TEST_MODE) return true;
-  if (!hasCoordinates(scene) || !userPosition) return false;
-  return distanceMeters(userPosition, scene) <= RADIUS_METERS;
+  return isSceneLocated(scene);
 }
 
 function hasCoordinates(scene) {
@@ -901,6 +990,10 @@ function hasCoordinates(scene) {
 
 function getSelectedScene() {
   return scenes.find((scene) => scene.id === selectedSceneId) || scenes[0];
+}
+
+function getScenesByNumber() {
+  return [...scenes].sort((first, second) => getSceneNumber(first) - getSceneNumber(second));
 }
 
 function getSceneById(sceneId) {
@@ -915,9 +1008,25 @@ function getSceneNumber(scene) {
   return scene.number ?? scenes.findIndex((item) => item.id === scene.id) + 1;
 }
 
+function isSceneUnlocked(scene) {
+  return getSceneNumber(scene) <= getUnlockedSceneLimit();
+}
+
+function getUnlockedSceneLimit() {
+  if (COMPLETE_TEST_MODE) return scenes.length;
+  return Math.min(scenes.length, 2 + progress.completed.length);
+}
+
+function isSceneLocated(scene) {
+  return Array.isArray(progress.located) && progress.located.includes(scene.id);
+}
+
 function updateMarker(scene) {
   const marker = sceneMarkers.get(scene.id);
-  if (!marker) return;
+  if (!marker) {
+    syncSceneMarkers();
+    return;
+  }
   marker.setIcon(
     L.divIcon({
       className: "",
@@ -926,12 +1035,6 @@ function updateMarker(scene) {
       iconAnchor: [16, 16],
     })
   );
-}
-
-function offsetPosition(center, index) {
-  const angle = (index / scenes.length) * Math.PI * 2;
-  const radius = 0.0025;
-  return [center[0] + Math.sin(angle) * radius, center[1] + Math.cos(angle) * radius];
 }
 
 function distanceMeters(from, to) {
@@ -969,16 +1072,22 @@ function normalizeExactAnswer(value) {
 function loadProgress() {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (stored && Array.isArray(stored.completed)) return stored;
+    if (stored && Array.isArray(stored.completed)) {
+      return {
+        ...stored,
+        located: Array.isArray(stored.located) ? stored.located : [],
+      };
+    }
   } catch {
     // Ignore invalid local state.
   }
-  return { completed: [] };
+  return { completed: [], located: [] };
 }
 
 function loadCompleteTestProgress() {
   return {
     completed: scenes.map((scene) => scene.id),
+    located: scenes.map((scene) => scene.id),
     letterOrder: scenes.map((scene) => scene.id),
   };
 }
