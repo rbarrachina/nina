@@ -1,6 +1,7 @@
 const RADIUS_METERS = 40;
 const FINAL_KEY = "SHERLOCKED";
 const STORAGE_KEY = "expedient-23-progress";
+const WELCOME_KEY = "expedient-23-welcome-seen";
 const URL_PARAMS = new URLSearchParams(window.location.search);
 const TEST_MODE = URL_PARAMS.get("test") === "1";
 const COMPLETE_TEST_MODE = TEST_MODE && URL_PARAMS.get("complete") === "1";
@@ -130,6 +131,7 @@ const scenes = [
 
 if (RESET_MODE) {
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(WELCOME_KEY);
 }
 
 let progress = COMPLETE_TEST_MODE ? loadCompleteTestProgress() : loadProgress();
@@ -162,6 +164,7 @@ function init() {
   initMap();
   bindEvents();
   renderAll();
+  showWelcomeMessage();
   locateUser();
   registerServiceWorker();
 }
@@ -365,6 +368,28 @@ function renderUserPosition() {
     userMarker.setLatLng(latLng);
   }
   map.setView(latLng, Math.max(map.getZoom(), 16));
+}
+
+function showWelcomeMessage() {
+  if (localStorage.getItem(WELCOME_KEY) === "1") return;
+
+  const overlay = document.createElement("div");
+  overlay.className = "final-prize-overlay welcome-overlay";
+  overlay.innerHTML = `
+    <article class="final-prize-card welcome-card">
+      <h2>Benvinguda, Nina</h2>
+      <p>El regal del teu 23è aniversari està amagat pel barri.</p>
+      <p>Per trobar-lo hauràs de resoldre 10 enigmes. Cada enigma superat et donarà una lletra de la paraula oculta. Quan les tinguis totes, ordena-les correctament i prem <strong>Validar</strong> per desbloquejar el premi final.</p>
+      <p>Activa la ubicació del mapa per poder validar la teva posició i resoldre els enigmes.</p>
+      <button class="final-prize-button" type="button">Començar</button>
+    </article>
+  `;
+  document.body.append(overlay);
+
+  overlay.querySelector("button").addEventListener("click", () => {
+    localStorage.setItem(WELCOME_KEY, "1");
+    overlay.remove();
+  });
 }
 
 function checkSceneAnswer(scene, value, feedback) {

@@ -454,6 +454,18 @@ p {
   color: var(--muted);
 }
 
+.final-prize-card strong {
+  color: var(--ink);
+}
+
+.welcome-card {
+  text-align: left;
+}
+
+.welcome-card h2 {
+  text-align: center;
+}
+
 .final-prize-button {
   width: 100%;
   min-height: 52px;
