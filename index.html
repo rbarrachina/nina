@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="assets/icon.svg">
     <link rel="preconnect" href="https://unpkg.com">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="styles.css?v=65">
+    <link rel="stylesheet" href="styles.css?v=66">
   </head>
   <body>
     <div class="final-prize-overlay welcome-overlay" id="welcomeOverlay">
@@ -19,7 +19,7 @@
         <p>El regal del teu 23è aniversari està amagat pel barri.</p>
         <p>Per trobar-lo hauràs de resoldre 10 enigmes. Cada enigma superat et donarà una lletra de la paraula oculta. Quan les tinguis totes, ordena-les correctament i prem <strong>Validar</strong> per desbloquejar el premi final.</p>
         <p>Activa la ubicació del mapa per poder validar la teva posició i resoldre els enigmes.</p>
-        <button class="final-prize-button" type="button">Començar</button>
+        <button class="final-prize-button" id="welcomeStartButton" type="button" onclick="localStorage.setItem('expedient-23-welcome-seen', '1'); this.closest('#welcomeOverlay')?.remove();">Començar</button>
       </article>
     </div>
     <div class="app-shell">
@@ -95,6 +95,6 @@
     </template>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js?v=65"></script>
+    <script src="app.js?v=66"></script>
   </body>
 </html>

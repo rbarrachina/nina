@@ -479,7 +479,7 @@ function showWelcomeMessage() {
     return;
   }
 
-  overlay.querySelector("button").addEventListener("click", () => {
+  document.querySelector("#welcomeStartButton")?.addEventListener("click", () => {
     localStorage.setItem(WELCOME_KEY, "1");
     overlay.remove();
   });
