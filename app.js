@@ -275,7 +275,7 @@ function discoverNearbyScenes() {
 
 function syncSceneMarkers() {
   scenes.forEach((scene) => {
-    const shouldShow = hasCoordinates(scene) && (isSceneLocated(scene) || isCompleted(scene.id) || (TEST_MODE && isSceneUnlocked(scene)));
+    const shouldShow = hasCoordinates(scene) && (isSceneLocated(scene) || isCompleted(scene.id));
     const marker = sceneMarkers.get(scene.id);
 
     if (shouldShow && !marker) {
