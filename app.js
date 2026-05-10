@@ -12,6 +12,7 @@ const CASE_CENTER = [41.3715, 2.1487];
 const scenes = [
   {
     id: "avia-bizcochos",
+    number: 4,
     title: "La testimoni dolça",
     letter: "E",
     lat: 41.370645,
@@ -23,6 +24,7 @@ const scenes = [
   },
   {
     id: "finestra-escola",
+    number: 1,
     title: "La finestra coneguda",
     letter: "S",
     lat: 41.371453,
@@ -36,6 +38,7 @@ const scenes = [
   },
   {
     id: "forn-1925",
+    number: 2,
     title: "El rastre de la farina",
     letter: "K",
     lat: 41.3709426,
@@ -47,6 +50,7 @@ const scenes = [
   },
   {
     id: "carrer-chopin",
+    number: 3,
     title: "El pianista silenciós",
     letter: "R",
     lat: 41.370674,
@@ -58,6 +62,7 @@ const scenes = [
   },
   {
     id: "la-choza",
+    number: 5,
     title: "El límit del barri",
     letter: "O",
     lat: 41.372341426287754,
@@ -69,6 +74,7 @@ const scenes = [
   },
   {
     id: "coberts-cinc-anys",
+    number: 6,
     title: "La pista dels 5 anys",
     letter: "D",
     lat: 41.371668,
@@ -80,6 +86,7 @@ const scenes = [
   },
   {
     id: "caixaforum-arbre",
+    number: 9,
     title: "L'arbre de vidre",
     letter: "H",
     lat: 41.371312,
@@ -91,6 +98,7 @@ const scenes = [
   },
   {
     id: "pendent-8",
+    number: 7,
     title: "La bústia groga",
     letter: "L",
     lat: 41.371652009137016,
@@ -103,6 +111,7 @@ const scenes = [
   },
   {
     id: "pendent-9",
+    number: 10,
     title: "El logo repetit",
     letter: "C",
     lat: 41.370706016384126,
@@ -116,6 +125,7 @@ const scenes = [
   },
   {
     id: "pendent-10",
+    number: 8,
     title: "El senyal blau",
     letter: "E",
     lat: 41.37352305794842,
@@ -200,7 +210,7 @@ function addSceneMarker(scene, index) {
   const marker = L.marker(position, {
     icon: L.divIcon({
       className: "",
-      html: `<span class="case-marker ${isCompleted(scene.id) ? "done" : ""}">${index + 1}</span>`,
+      html: `<span class="case-marker ${isCompleted(scene.id) ? "done" : ""}">${getSceneNumber(scene)}</span>`,
       iconSize: [32, 32],
       iconAnchor: [16, 16],
     }),
@@ -301,7 +311,7 @@ function renderProgress() {
 function renderScene(scene) {
   const fragment = elements.sceneTemplate.content.cloneNode(true);
   const card = fragment.querySelector(".scene-card");
-  const sceneNumber = scenes.findIndex((item) => item.id === scene.id) + 1;
+  const sceneNumber = getSceneNumber(scene);
   const isDone = isCompleted(scene.id);
   const canOpen = canOpenScene(scene);
   const image = fragment.querySelector(".scene-image");
@@ -901,14 +911,17 @@ function isCompleted(sceneId) {
   return progress.completed.includes(sceneId);
 }
 
+function getSceneNumber(scene) {
+  return scene.number ?? scenes.findIndex((item) => item.id === scene.id) + 1;
+}
+
 function updateMarker(scene) {
   const marker = sceneMarkers.get(scene.id);
   if (!marker) return;
-  const index = scenes.findIndex((item) => item.id === scene.id);
   marker.setIcon(
     L.divIcon({
       className: "",
-      html: `<span class="case-marker done">${index + 1}</span>`,
+      html: `<span class="case-marker done">${getSceneNumber(scene)}</span>`,
       iconSize: [32, 32],
       iconAnchor: [16, 16],
     })
