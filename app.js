@@ -365,7 +365,17 @@ function renderScene(scene) {
     image.classList.remove("is-hidden");
   }
 
-  fragment.querySelector(".distance-note").textContent = distanceCopy(scene, canOpen);
+  const distanceNote = fragment.querySelector(".distance-note");
+  distanceNote.textContent = distanceCopy(scene, canOpen);
+
+  if (canLocateInTest(scene)) {
+    const testLocateButton = document.createElement("button");
+    testLocateButton.className = "test-locate-button";
+    testLocateButton.type = "button";
+    testLocateButton.textContent = "Localitzar en prova";
+    testLocateButton.addEventListener("click", () => locateSceneForTesting(scene));
+    distanceNote.append(testLocateButton);
+  }
 
   if (isUnlocked && canOpen && !scene.pending) {
     challenge.classList.remove("is-hidden");
@@ -481,6 +491,19 @@ function showWelcomeMessage() {
     localStorage.setItem(WELCOME_KEY, "1");
     overlay.remove();
   });
+}
+
+function canLocateInTest(scene) {
+  return TEST_MODE && isSceneUnlocked(scene) && !isSceneLocated(scene) && !isCompleted(scene.id);
+}
+
+function locateSceneForTesting(scene) {
+  if (!canLocateInTest(scene)) return;
+  progress.located.push(scene.id);
+  saveProgress();
+  syncSceneMarkers();
+  renderSceneQueue();
+  renderScene(scene);
 }
 
 function checkSceneAnswer(scene, value, feedback) {
