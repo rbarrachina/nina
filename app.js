@@ -472,20 +472,12 @@ function renderSceneQueue() {
 }
 
 function showWelcomeMessage() {
-  if (!RESET_MODE && localStorage.getItem(WELCOME_KEY) === "1") return;
-
-  const overlay = document.createElement("div");
-  overlay.className = "final-prize-overlay welcome-overlay";
-  overlay.innerHTML = `
-    <article class="final-prize-card welcome-card">
-      <h2>Benvinguda, Nina</h2>
-      <p>El regal del teu 23è aniversari està amagat pel barri.</p>
-      <p>Per trobar-lo hauràs de resoldre 10 enigmes. Cada enigma superat et donarà una lletra de la paraula oculta. Quan les tinguis totes, ordena-les correctament i prem <strong>Validar</strong> per desbloquejar el premi final.</p>
-      <p>Activa la ubicació del mapa per poder validar la teva posició i resoldre els enigmes.</p>
-      <button class="final-prize-button" type="button">Començar</button>
-    </article>
-  `;
-  document.body.append(overlay);
+  const overlay = document.querySelector("#welcomeOverlay");
+  if (!overlay) return;
+  if (!RESET_MODE && localStorage.getItem(WELCOME_KEY) === "1") {
+    overlay.remove();
+    return;
+  }
 
   overlay.querySelector("button").addEventListener("click", () => {
     localStorage.setItem(WELCOME_KEY, "1");
