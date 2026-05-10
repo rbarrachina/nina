@@ -472,7 +472,7 @@ function renderSceneQueue() {
 }
 
 function showWelcomeMessage() {
-  if (localStorage.getItem(WELCOME_KEY) === "1") return;
+  if (!RESET_MODE && localStorage.getItem(WELCOME_KEY) === "1") return;
 
   const overlay = document.createElement("div");
   overlay.className = "final-prize-overlay welcome-overlay";
