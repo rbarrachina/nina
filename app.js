@@ -151,6 +151,7 @@ let sceneSheetOpen = false;
 let map;
 let userMarker;
 let locationWatchId = null;
+let hasCenteredOnUser = false;
 let activeEvidenceDrag = false;
 let selectedEvidenceId = null;
 let nativeDragId = null;
@@ -230,7 +231,7 @@ function locateUser() {
   }
 
   if (locationWatchId !== null) {
-    if (userPosition) renderUserPosition();
+    if (userPosition) renderUserPosition(true);
     return;
   }
 
@@ -240,7 +241,6 @@ function locateUser() {
     () => {
       elements.mapStatus.textContent = "GPS no autoritzat";
       locationWatchId = null;
-      if (sceneSheetOpen) renderScene(getSelectedScene());
     },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 15000 }
   );
@@ -252,25 +252,30 @@ function handlePositionUpdate(position) {
     lng: position.coords.longitude,
     accuracy: position.coords.accuracy,
   };
-  renderUserPosition();
-  discoverNearbyScenes();
+  renderUserPosition(!hasCenteredOnUser);
+  const newlyLocatedIds = discoverNearbyScenes();
   syncSceneMarkers();
   renderSceneQueue();
-  if (sceneSheetOpen) renderScene(getSelectedScene());
+  if (sceneSheetOpen && newlyLocatedIds.includes(selectedSceneId)) {
+    renderScene(getSelectedScene());
+  }
   elements.mapStatus.textContent = `GPS actiu · precisió ${Math.round(userPosition.accuracy)} m`;
 }
 
 function discoverNearbyScenes() {
-  if (!userPosition) return;
+  if (!userPosition) return [];
   let changed = false;
+  const newlyLocatedIds = [];
   scenes.forEach((scene) => {
     if (!isSceneUnlocked(scene) || isSceneLocated(scene) || !hasCoordinates(scene)) return;
     if (distanceMeters(userPosition, scene) <= RADIUS_METERS) {
       progress.located.push(scene.id);
+      newlyLocatedIds.push(scene.id);
       changed = true;
     }
   });
   if (changed) saveProgress();
+  return newlyLocatedIds;
 }
 
 function syncSceneMarkers() {
@@ -404,7 +409,7 @@ function onSceneBackdropClick(event) {
   }
 }
 
-function renderUserPosition() {
+function renderUserPosition(shouldCenter = false) {
   const latLng = [userPosition.lat, userPosition.lng];
   if (!userMarker) {
     userMarker = L.marker(latLng, {
@@ -418,7 +423,10 @@ function renderUserPosition() {
   } else {
     userMarker.setLatLng(latLng);
   }
-  map.setView(latLng, Math.max(map.getZoom(), 16));
+  if (shouldCenter) {
+    map.setView(latLng, Math.max(map.getZoom(), 16));
+    hasCenteredOnUser = true;
+  }
 }
 
 function addSceneQueueControl() {
