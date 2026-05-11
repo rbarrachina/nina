@@ -453,7 +453,7 @@ function renderSceneQueue() {
   getScenesByNumber().forEach((scene) => {
     const button = document.createElement("button");
     const unlocked = isSceneUnlocked(scene);
-    const located = isSceneLocated(scene) || isCompleted(scene.id) || (TEST_MODE && unlocked);
+    const located = isSceneLocated(scene) || isCompleted(scene.id);
     button.type = "button";
     button.className = [
       "scene-queue-button",
@@ -976,7 +976,7 @@ function stateLabel(scene, isDone, canOpen) {
   if (scene.pending) return "pendent";
   if (isDone) return "resolta";
   if (!isSceneUnlocked(scene)) return "bloquejada";
-  if (!isSceneLocated(scene) && !TEST_MODE) return "per localitzar";
+  if (!isSceneLocated(scene)) return "per localitzar";
   if (canOpen) return "oberta";
   return "bloquejada";
 }
@@ -989,7 +989,7 @@ function distanceCopy(scene, canOpen) {
       ? "Mode de prova actiu: escena oberta sense coordenades."
       : "Falten les coordenades d'aquesta escena per activar el radi de 40 metres.";
   }
-  if (!isSceneLocated(scene) && !TEST_MODE) {
+  if (!isSceneLocated(scene)) {
     return "Aquest enigma encara no és al mapa. Acosta't a la seva ubicació i apareixerà automàticament quan siguis dins del radi de 40 metres.";
   }
   if (!userPosition) return "Activa el GPS per comprovar si ets dins del radi de 40 metres.";
@@ -1003,7 +1003,6 @@ function canOpenScene(scene) {
   if (isCompleted(scene.id)) return true;
   if (scene.pending) return false;
   if (!isSceneUnlocked(scene)) return false;
-  if (TEST_MODE) return true;
   return isSceneLocated(scene);
 }
 
