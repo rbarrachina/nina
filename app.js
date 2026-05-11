@@ -44,7 +44,7 @@ const scenes = [
     lat: 41.3709426,
     lng: 2.1459405,
     clue:
-      "Detectiva Nina, segueix el rastre de la farina. Hi ha un establiment del barri que porta dècades deixant pistes calentes. Busca el forn i observa bé el seu rètol.",
+      "Detectiva Nina, segueix el rastre de la farina. Hi ha un establiment del barri que porta dècades fent pa i treballa la germana de la Noa.",
     question: "El rètol conserva una data important. Escriu l'any de creació del forn.",
     answers: ["1925"],
   },
@@ -68,8 +68,8 @@ const scenes = [
     lat: 41.372341426287754,
     lng: 2.145986591864896,
     clue:
-      "Detectiva Nina, el cas et porta fins al límit del barri. Busca el lloc on de vegades anem a sopar i observa què té just al costat.",
-    question: "Al costat de La Choza hi ha un número que no passa desapercebut. Escriu el número del carrer.",
+      "Detectiva Nina, el cas et porta fins al límit del barri. En ocasions hem anat a sopar i es diu La C***A.",
+    question: "Al costat de La Choza hi ha un portal. Escriu aquest número.",
     answers: ["300"],
   },
   {
@@ -80,8 +80,8 @@ const scenes = [
     lat: 41.371668,
     lng: 2.146604,
     clue:
-      "Detectiva Nina, aquest rastre ve de quan tenies 5 anys. Vas entrar a l'edifici moltes vegades, encara que potser no sabies que un dia seria una escena del cas.",
-    question: "Mira els rètols dels restaurants del costat. Quants coberts hi ha en total?",
+      "Detectiva Nina, aquest rastre ve de quan tenies 5 anys. Vas entrar a l'edifici cada dia de dilluns a divendres, encara que potser no sabies que un dia seria una escena del cas.",
+    question: "Mira els rètols del restaurant del costat on hem dinat alguna vegada. Quants coberts hi ha en total?",
     answers: ["9"],
   },
   {
@@ -92,7 +92,7 @@ const scenes = [
     lat: 41.371312,
     lng: 2.150112,
     clue:
-      "Detectiva Nina, al límit del barri hi ha un arbre que no ha crescut de la terra. Té un sostre de vidre i unes branques que sostenen el secret. Troba'l.",
+      "Detectiva Nina, al límit del barri hi ha una gran escultura que te forma d'arbre. Un arbre metàl·lic amb un sostre de vidre i unes branques que sostenen el secret. Troba'l.",
     question: "Observa l'arbre artificial. Quantes branques aguanten el sostre de vidre?",
     answers: ["16"],
   },
@@ -105,7 +105,7 @@ const scenes = [
     lng: 2.145064183825752,
     image: "assets/bustia-282.png",
     clue:
-      "Detectiva Nina, busca aquesta bústia groga. El cas s'ha amagat en un racó de carrer que sembla normal, però no ho és.",
+      "Detectiva Nina, busca aquesta bústia groga.",
     question: "Quan la trobis, mira el portal del costat. Quin número hi apareix?",
     answers: ["282"],
   },
@@ -116,10 +116,10 @@ const scenes = [
     letter: "C",
     lat: 41.370706016384126,
     lng: 2.14892137067909,
-    image: "assets/logo-jam-session.png",
+    image: "assets/jam-session.jpeg",
     hiddenOnMap: true,
     clue:
-      "Detectiva Nina, aquest logo apareix en diferents situacions del barri. Però aquest està situat al carrer dels...",
+      "Detectiva Nina, aquest logo apareix en diferents llocs del barri. Posa't davant i sabràs que estàs al carrer dels ...",
     question: "Completa el nom del carrer on has trobat aquest logo.",
     answers: ["MONTFAR"],
   },
