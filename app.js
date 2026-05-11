@@ -31,7 +31,7 @@ const scenes = [
     lng: 2.145783,
     image: "assets/finestra-escola.png",
     clue:
-      "Detectiva Nina, torna a una finestra coneguda. Busca el lloc on segur que vas treure el cap moltes vegades. Quan hi arribis, les parets et diran el nom que necessites.",
+      "Detectiva Nina, possiblement has mirat moltes vegades per aquesta finestra. Busca on està ubicada i quan hi arribis, les parets et diran el nom que necessites.",
     question: "Escriu el nom de l'escola exactament com apareix a la paret.",
     answers: ["magòria"],
     exactAnswer: true,
