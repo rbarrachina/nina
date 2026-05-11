@@ -102,7 +102,6 @@ p {
   box-shadow: var(--shadow);
 }
 
-.intro,
 .progress-panel,
 .scene-card {
   border: 1px solid var(--line);
@@ -113,21 +112,12 @@ p {
   box-shadow: var(--shadow);
 }
 
-.intro {
-  padding: 16px;
-}
-
-.intro p {
-  margin-bottom: 0;
-  color: var(--muted);
-}
-
 .map-wrap {
   position: relative;
   overflow: hidden;
-  height: clamp(300px, 52vh, 470px);
-  min-height: 300px;
-  margin: 16px 0;
+  height: clamp(340px, 60vh, 560px);
+  min-height: 340px;
+  margin: 12px 0 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #17140f;
@@ -783,18 +773,10 @@ p {
     line-height: 1;
   }
 
-  .intro {
-    padding: 12px;
-  }
-
-  .intro p {
-    font-size: 0.95rem;
-  }
-
   .map-wrap {
-    height: clamp(260px, 42dvh, 360px);
-    min-height: 260px;
-    margin: 12px 0;
+    height: clamp(330px, 54dvh, 470px);
+    min-height: 330px;
+    margin: 8px 0 12px;
   }
 
   .progress-panel {

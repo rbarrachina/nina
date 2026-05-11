@@ -10,13 +10,14 @@
     <link rel="apple-touch-icon" href="assets/icon.svg">
     <link rel="preconnect" href="https://unpkg.com">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="styles.css?v=67">
+    <link rel="stylesheet" href="styles.css?v=68">
   </head>
   <body>
     <div class="final-prize-overlay welcome-overlay" id="welcomeOverlay">
       <article class="final-prize-card welcome-card">
         <h2>Hola, Nina</h2>
         <p>El regal del teu 23è aniversari està amagat pel barri.</p>
+        <p>Detectiva Nina, hi ha 10 escenes repartides pel barri. Cada escena resolta et donarà una lletra. Quan les tinguis totes, ordena-les i tanca l'expedient.</p>
         <p>Per trobar-lo hauràs de resoldre 10 enigmes. Cada enigma superat et donarà una lletra de la paraula oculta. Quan les tinguis totes, ordena-les correctament i prem <strong>Validar</strong> per desbloquejar el premi final.</p>
         <p>Activa la ubicació del mapa per poder validar la teva posició i resoldre els enigmes.</p>
         <button class="final-prize-button" id="welcomeStartButton" type="button" onclick="localStorage.setItem('expedient-23-welcome-seen', '1'); this.closest('#welcomeOverlay')?.remove();">Començar</button>
@@ -34,13 +35,6 @@
       </header>
 
       <main>
-        <section class="intro" id="introPanel">
-          <p>
-            Detectiva Nina, hi ha 10 escenes repartides pel barri. Cada escena resolta et
-            donarà una lletra. Quan les tinguis totes, ordena-les i tanca l'expedient.
-          </p>
-        </section>
-
         <section class="map-wrap" aria-label="Mapa del cas">
           <div id="map"></div>
           <div class="map-status" id="mapStatus">GPS pendent d'autorització</div>
@@ -95,6 +89,6 @@
     </template>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js?v=67"></script>
+    <script src="app.js?v=68"></script>
   </body>
 </html>
