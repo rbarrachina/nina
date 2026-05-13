@@ -1,4 +1,4 @@
-const RADIUS_METERS = 40;
+const RADIUS_METERS = 30;
 const FINAL_KEY = "SHERLOCKED";
 const STORAGE_KEY = "expedient-23-progress";
 const WELCOME_KEY = "expedient-23-welcome-seen";
@@ -310,7 +310,7 @@ function renderEmptyScene() {
     <div class="empty-state">
       <p class="label">Escenes</p>
       <h2>Selecciona un número desbloquejat</h2>
-      <p>Quan siguis dins del radi de 40 metres, l'enigma apareixerà al mapa i podràs resoldre'l.</p>
+      <p>Quan siguis dins del radi de 30 metres, l'enigma apareixerà al mapa i podràs resoldre'l.</p>
     </div>
   `;
 }
@@ -987,16 +987,16 @@ function distanceCopy(scene, canOpen) {
   if (!hasCoordinates(scene)) {
     return TEST_MODE
       ? "Mode de prova actiu: escena oberta sense coordenades."
-      : "Falten les coordenades d'aquesta escena per activar el radi de 40 metres.";
+      : "Falten les coordenades d'aquesta escena per activar el radi de 30 metres.";
   }
-  if (!userPosition) return "Activa el GPS per comprovar si ets dins del radi de 40 metres.";
+  if (!userPosition) return "Activa el GPS per comprovar si ets dins del radi de 30 metres.";
 
   const distance = distanceMeters(userPosition, scene);
   if (!isSceneLocated(scene)) {
-    return `Estàs a ${Math.round(distance)} m. Acosta't fins a 40 m perquè l'enigma aparegui al mapa.`;
+    return `Estàs a ${Math.round(distance)} m. Acosta't fins a 30 m perquè l'enigma aparegui al mapa.`;
   }
   if (canOpen) return `Estàs a ${Math.round(distance)} m. L'escena es pot investigar.`;
-  return `Estàs a ${Math.round(distance)} m. Acosta't fins a 40 m per obrir el repte.`;
+  return `Estàs a ${Math.round(distance)} m. Acosta't fins a 30 m per obrir el repte.`;
 }
 
 function canOpenScene(scene) {
