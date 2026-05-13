@@ -989,12 +989,12 @@ function distanceCopy(scene, canOpen) {
       ? "Mode de prova actiu: escena oberta sense coordenades."
       : "Falten les coordenades d'aquesta escena per activar el radi de 40 metres.";
   }
-  if (!isSceneLocated(scene)) {
-    return "Aquest enigma encara no és al mapa. Acosta't a la seva ubicació i apareixerà automàticament quan siguis dins del radi de 40 metres.";
-  }
   if (!userPosition) return "Activa el GPS per comprovar si ets dins del radi de 40 metres.";
 
   const distance = distanceMeters(userPosition, scene);
+  if (!isSceneLocated(scene)) {
+    return `Estàs a ${Math.round(distance)} m. Acosta't fins a 40 m perquè l'enigma aparegui al mapa.`;
+  }
   if (canOpen) return `Estàs a ${Math.round(distance)} m. L'escena es pot investigar.`;
   return `Estàs a ${Math.round(distance)} m. Acosta't fins a 40 m per obrir el repte.`;
 }
